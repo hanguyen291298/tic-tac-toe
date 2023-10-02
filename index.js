@@ -57,16 +57,37 @@ const displayController = (()=>{
         square_childs[random_p].textContent = player
     }
 
+
+    const check_winer = ()=>{
+        const winning_combinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], //rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], //columns
+            [0, 4, 8], [2, 4, 6] //diagonals
+        ]
+        const square_childs = size.querySelectorAll(".cell")
+        winning_combinations.forEach(element => {
+            if (square_childs[element[0]].textContent === square_childs[element[1]].textContent &&
+                square_childs[element[0]].textContent === square_childs[element[2]].textContent &&
+                square_childs[element[0]].textContent !== ""){
+                
+                    console.log(`the winner is ${square_childs[element[0]].textContent}`) 
+                     
+            }
+            
+        });
+
+    }
+
+
+
     const show_mark = ()=>{
        
         document.addEventListener("click", (event)=>{
-
-            let square = event.target
-            
-            
+            let square = event.target            
             if(square.classList.contains("cell") && square.textContent === ""){
                 square.innerHTML = currentPlayer_1
                 setTimeout(random_cell, 500, currentPlayer_2)
+                check_winer()
             }
         })
     }
