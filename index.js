@@ -46,16 +46,27 @@ const displayController = (()=>{
     }
 
 
+    const random_cell = (player)=>{
+        const square_childs = size.querySelectorAll(".cell")
+        let random_p = Math.floor(Math.random() * 9)
+        do {
+            random_p = Math.floor(Math.random() * 9)
+        }
+        while (square_childs[random_p].textContent !== "")
+
+        square_childs[random_p].textContent = player
+    }
+
     const show_mark = ()=>{
        
         document.addEventListener("click", (event)=>{
+
             let square = event.target
-            let random_positon = Math.floor(Math.random() * 3)
-            const square_childs = size.querySelectorAll(".cell")
-            console.log(square_childs.length)
+            
+            
             if(square.classList.contains("cell") && square.textContent === ""){
                 square.innerHTML = currentPlayer_1
-                
+                setTimeout(random_cell, 500, currentPlayer_2)
             }
         })
     }
