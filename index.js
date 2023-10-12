@@ -1,104 +1,117 @@
-
 const gameBoard = (()=>{
-    let boardgame = ['', '', '', '', '', '', '', '', '']
-    const size = document.querySelector(".board")
-
-    const create_grid = function(){
-        for (let i = 0; i < boardgame.length; i++){
+    
+    const board = document.querySelector(".board")
+    
+    const create_grid = function(size){
+        board.style.gridTemplateColumns = `repeat(${size}, 100px)`
+        board.style.gridTemplateRows = `repeat(${size}, 100px)`
+        for (let i = 0; i < size ** 2; i++){
             let cell = document.createElement("div")
             cell.classList.add("cell")
-            size.appendChild(cell)            
-        }
+            board.appendChild(cell)                     
+        }      
+    }
+
+    const return_content_board = ()=>{
+        let boardgame = []
+        const grid_cells = document.querySelectorAll(".cell")
+        grid_cells.forEach((element)=>{
+            boardgame.push(element.textContent)
+        })
+        return boardgame
     }
 
     const restart = function(){
         const restart_btn = document.querySelector(".restart")
         restart_btn.addEventListener("click", ()=>{
-            size.textContent = "";
-            gameBoard.create_grid()
+            board.textContent = "";
+            console.log('true')
+            gameBoard.create_grid(3)
         })
     }
-    return {create_grid, restart}
+    return {create_grid, restart, return_content_board}
+
 })()
     
-gameBoard.create_grid()
+gameBoard.create_grid(3)
 gameBoard.restart()
 
+player = (mark, name)=>{
+    return {name, mark}
+}
+
+player1 = player("X", "ha")
+
+console.log(player1.name)
 
 
-const displayController = (()=>{
-    const size = document.querySelector(".board")
-    let currentPlayer_1 = "";
-    let currentPlayer_2 = "";
-    const mark_sign = ()=>{
-        document.addEventListener("click", (event)=>{
-            const mark = event.target.getAttribute("mark")
-           if( mark === "X" ){
-                
-                currentPlayer_1 = "X";
-                currentPlayer_2 = "O";
-           }
-           else if (mark === "O"){
-                currentPlayer_1 = "O";
-                currentPlayer_2 = "X";
-           }
-        })
-    }
 
-
-    const random_cell = (player)=>{
-        const square_childs = size.querySelectorAll(".cell")
-        let random_p = Math.floor(Math.random() * 9)
+const displayController = (() => {
+    const board = document.querySelector(".board");
+    
+    let winner = null
+    const random_cell = (player) => {
+        let random_position = "";
+        const cells_inside_board = board.querySelectorAll(".cell");
         do {
-            random_p = Math.floor(Math.random() * 9)
-        }
-        while (square_childs[random_p].textContent !== "")
+            random_position = Math.floor(Math.random() * 9);
+        } while (cells_inside_board[random_position].textContent !== "");
 
-        square_childs[random_p].textContent = player
-    }
+        cells_inside_board[random_position].textContent = player;
+    };
 
-
-    const check_winer = ()=>{
+    const check_winner = () => {
         const winning_combinations = [
             [0, 1, 2], [3, 4, 5], [6, 7, 8], //rows
             [0, 3, 6], [1, 4, 7], [2, 5, 8], //columns
             [0, 4, 8], [2, 4, 6] //diagonals
-        ]
-        const square_childs = size.querySelectorAll(".cell")
+        ];
+        const cells_inside_board = board.querySelectorAll(".cell");
         winning_combinations.forEach(element => {
-            if (square_childs[element[0]].textContent === square_childs[element[1]].textContent &&
-                square_childs[element[0]].textContent === square_childs[element[2]].textContent &&
-                square_childs[element[0]].textContent !== ""){
-                
-                    console.log(`the winner is ${square_childs[element[0]].textContent}`) 
-                     
-            }
+        
+            if (
+                cells_inside_board[element[0]].textContent === cells_inside_board[element[1]].textContent &&
+                cells_inside_board[element[0]].textContent === cells_inside_board[element[2]].textContent &&
+                cells_inside_board[element[0]].textContent !== ""
+            ) {
+                winner = cells_inside_board[element[0]].textContent;
+                console.log(`The winner is ${winner}`);
             
+            }
         });
 
-    }
+    };
 
+    const display = (you, other_player) => {
+        if (you.mark === "X") {
+            other_player = "O";
+        } else {
+            other_player = "X";
+        }
 
+        document.addEventListener("click", (event) => {
+            let clicked_position = event.target;
+            if (clicked_position.classList.contains("cell") && clicked_position.textContent === "") {
+                clicked_position.innerHTML = you.mark;
 
-    const show_mark = ()=>{
-       
-        document.addEventListener("click", (event)=>{
-            let square = event.target            
-            if(square.classList.contains("cell") && square.textContent === ""){
-                square.innerHTML = currentPlayer_1
-                setTimeout(random_cell, 500, currentPlayer_2)
-                check_winer()
+                check_winner();
+                if (!winner) {
+                    
+                    setTimeout(()=>{
+                        random_cell(other_player)
+                        check_winner()
+                    }, 500)
+                    
+                } else {                   
+                    winner = null
+                    
+                }
             }
-        })
-    }
-    return {mark_sign, show_mark}   
-})()
+        });
+    };
 
-displayController.mark_sign()
-displayController.show_mark()
+    return { display, check_winner };
+})();
 
 
-
-const player = ()=>{
-
-}
+displayController.display(player1)
