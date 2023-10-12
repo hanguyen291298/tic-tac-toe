@@ -47,9 +47,9 @@ console.log(player1.name)
 
 
 const displayController = (() => {
-    const board = document.querySelector(".board");
-    
+    const board = document.querySelector(".board");   
     let winner = null
+
     const random_cell = (player) => {
         let random_position = "";
         const cells_inside_board = board.querySelectorAll(".cell");
@@ -60,6 +60,12 @@ const displayController = (() => {
         cells_inside_board[random_position].textContent = player;
     };
 
+    const showwinner = document.querySelector(".show-winner")
+    const show_winner =()=>{          
+            showwinner.style.display = "none"
+    }
+
+    
     const check_winner = () => {
         const winning_combinations = [
             [0, 1, 2], [3, 4, 5], [6, 7, 8], //rows
@@ -67,6 +73,7 @@ const displayController = (() => {
             [0, 4, 8], [2, 4, 6] //diagonals
         ];
         const cells_inside_board = board.querySelectorAll(".cell");
+        
         winning_combinations.forEach(element => {
         
             if (
@@ -76,6 +83,9 @@ const displayController = (() => {
             ) {
                 winner = cells_inside_board[element[0]].textContent;
                 console.log(`The winner is ${winner}`);
+                showwinner.style.display = "block"
+                showwinner.innerHTML = `The winner is ${winner}`
+                showwinner.addEventListener("click", show_winner )
             
             }
         });
